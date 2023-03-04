@@ -83,7 +83,7 @@ buildLibrary "iphonesimulator" "iphonesimulator" "iPhoneSimulator" "" "x86_64 ar
 LIB_NAME="LIBDSM"
 XCFRAMEWORK_NAME="$LIB_NAME.xcframework"
 
-TAG=$DSM_TAG
+TAG="0.3.3"
 ZIPNAME="$LIB_NAME-$TAG.xcframework.zip"
 GIT_REMOTE_URL_UNFINISHED=$(git config --get remote.origin.url|sed "s=^ssh://==; s=^https://==; s=:=/=; s/git@//; s/.git$//;")
 DOWNLOAD_URL=https://$GIT_REMOTE_URL_UNFINISHED/releases/download/$TAG/$ZIPNAME
@@ -142,11 +142,11 @@ let package = Package(
 EOL
 
 GIT_TRACE=1 git add Package.swift
-TAG_MESSAGE="libdsm-$DSM_TAG + libtasn-$TASN1_TAG"
+TAG_MESSAGE="LIBSDM-$TAG with libdsm-$DSM_TAG + libtasn-$TASN1_TAG"
 GIT_TRACE=1 git commit -S -m "$TAG_MESSAGE"
-GIT_TRACE=1 git tag -s -m "$TAG_MESSAGE" "$TAG"
-GIT_TRACE=1 git push
-GIT_TRACE=1 git push --tags
+git tag -s -m "$TAG_MESSAGE" "$TAG"
+git push
+git push --tags
 gh release create "$TAG" "$ZIPNAME" -t "$TAG" -n "$TAG_MESSAGE"
 
 echo "Done"
