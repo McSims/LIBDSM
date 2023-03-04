@@ -1,0 +1,15 @@
+framework module TOSMBClient {
+    header "bdsm.h"
+    header "libtasn1.h"
+    header "netbios_defs.h"
+    header "netbios_ns.h"
+    header "smb_defs.h"
+    header "smb_dir.h"
+    header "smb_file.h"
+    header "smb_session.h"
+    header "smb_share.h"
+    header "smb_stat.h"
+    header "smb_types.h"
+
+    export *
+}
