@@ -54,11 +54,11 @@ fi
 # Build libs
 
 echo Remove the previous builds info
-# rm -rf $WORKING_DIR/LIBDSM.xcframework
-# rm -rf $BUILD/products
-# rm -rf $DSM_DIR_NAME/libtasn1
-# rm -rf $DSM_DIR_NAME/build
-# rm -rf $TASN1_BUILD_DIR/build
+rm -rf $WORKING_DIR/LIBDSM.xcframework
+rm -rf $BUILD/products
+rm -rf $DSM_DIR_NAME/libtasn1
+rm -rf $DSM_DIR_NAME/build
+rm -rf $TASN1_BUILD_DIR/build
 
 buildLibrary () {
   export BUILD_PRODUCTS_DIR=$1
@@ -75,8 +75,8 @@ buildLibrary () {
   "$ROOT_PATH/LIBDSM/build-libdsm.sh"
 }
 
-# buildLibrary "iphoneos" "iphoneos" "iPhoneOS" "" "armv7 armv7s arm64" "9.0"
-# buildLibrary "iphonesimulator" "iphonesimulator" "iPhoneSimulator" "" "x86_64 arm64" "9.0"
+buildLibrary "iphoneos" "iphoneos" "iPhoneOS" "" "armv7 armv7s arm64" "9.0"
+buildLibrary "iphonesimulator" "iphonesimulator" "iPhoneSimulator" "" "x86_64 arm64" "9.0"
 
 # Create framework
 
@@ -141,12 +141,12 @@ let package = Package(
 )
 EOL
 
-git add Package.swift
+GIT_TRACE=1 git add Package.swift
 TAG_MESSAGE="libdsm-$DSM_TAG + libtasn-$TASN1_TAG"
-git commit -S -m "$TAG_MESSAGE"
-git tag -s -m "$TAG_MESSAGE" "$TAG"
-git push
-git push --tags
+GIT_TRACE=1 git commit -S -m "$TAG_MESSAGE"
+GIT_TRACE=1 git tag -s -m "$TAG_MESSAGE" "$TAG"
+GIT_TRACE=1 git push
+GIT_TRACE=1 git push --tags
 gh release create "$TAG" "$ZIPNAME" -t "$TAG" -n "$TAG_MESSAGE"
 
 echo "Done"
