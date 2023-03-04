@@ -54,11 +54,11 @@ fi
 # Build libs
 
 echo Remove the previous builds info
-rm -rf $WORKING_DIR/LIBDSM.xcframework
-rm -rf $BUILD/products
-rm -rf $DSM_DIR_NAME/libtasn1
-rm -rf $DSM_DIR_NAME/build
-rm -rf $TASN1_BUILD_DIR/build
+# rm -rf $WORKING_DIR/LIBDSM.xcframework
+# rm -rf $BUILD/products
+# rm -rf $DSM_DIR_NAME/libtasn1
+# rm -rf $DSM_DIR_NAME/build
+# rm -rf $TASN1_BUILD_DIR/build
 
 buildLibrary () {
   export BUILD_PRODUCTS_DIR=$1
@@ -75,8 +75,8 @@ buildLibrary () {
   "$ROOT_PATH/LIBDSM/build-libdsm.sh"
 }
 
-buildLibrary "iphoneos" "iphoneos" "iPhoneOS" "" "armv7 armv7s arm64" "9.0"
-buildLibrary "iphonesimulator" "iphonesimulator" "iPhoneSimulator" "" "x86_64 arm64" "9.0"
+# buildLibrary "iphoneos" "iphoneos" "iPhoneOS" "" "armv7 armv7s arm64" "9.0"
+# buildLibrary "iphonesimulator" "iphonesimulator" "iPhoneSimulator" "" "x86_64 arm64" "9.0"
 
 # Create framework
 
@@ -85,6 +85,8 @@ XCFRAMEWORK_NAME="$LIB_NAME.xcframework"
 
 TAG=$DSM_TAG
 ZIPNAME="$LIB_NAME-$TAG.xcframework.zip"
+GIT_REMOTE_URL_UNFINISHED=$(git config --get remote.origin.url|sed "s=^ssh://==; s=^https://==; s=:=/=; s/git@//; s/.git$//;")
+DOWNLOAD_URL=https://$GIT_REMOTE_URL_UNFINISHED/releases/download/$TAG/$ZIPNAME
 
 FRAMEWORK="$LIB_NAME.framework"
 FRAMEWORKS_DIR=$WORKING_DIR/Frameworks
@@ -108,3 +110,43 @@ xcodebuild -create-xcframework \
  -framework "$FRAMEWORKS_DIR/iphoneos/$FRAMEWORK" \
  -framework "$FRAMEWORKS_DIR/iphonesimulator/$FRAMEWORK" \
  -output "$XCFRAMEWORK_NAME"
+
+ rm -rf "$FRAMEWORKS_DIR"
+
+# #Release
+
+echo "Zip $ZIPNAME to $$XCFRAMEWORK_NAME"
+
+zip -ry $ZIPNAME $XCFRAMEWORK_NAME
+rm -rf $XCFRAMEWORK_NAME
+CHECKSUM=$(swift package compute-checksum $ZIPNAME)
+
+echo "xcframework successfully zipped out to: $(pwd)/$ZIPNAME"
+
+cat >Package.swift << EOL
+// swift-tools-version:5.3
+
+import PackageDescription
+
+let package = Package(
+    name: "$LIB_NAME",
+    products: [
+        .library(name: "$LIB_NAME", targets: ["$LIB_NAME"])
+    ],
+    targets: [
+        .binaryTarget(name: "$LIB_NAME",
+                      url: "$DOWNLOAD_URL",
+                      checksum: "$CHECKSUM")
+    ]
+)
+EOL
+
+git add Package.swift
+TAG_MESSAGE="libdsm-$DSM_TAG + libtasn-$TASN1_TAG"
+git commit -S -m "$TAG_MESSAGE"
+git tag -s -m "$TAG_MESSAGE" "$TAG"
+git push
+git push --tags
+gh release create "$TAG" "$ZIPNAME" -t "$TAG" -n "$TAG_MESSAGE"
+
+echo "Done"

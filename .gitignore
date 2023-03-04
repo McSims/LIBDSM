@@ -1,3 +1,5 @@
 Frameworks
 LIBDSM.xcframework
 build
+.DS_Store
+*.zip
