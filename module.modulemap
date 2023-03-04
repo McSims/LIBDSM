@@ -1,4 +1,4 @@
-framework module TOSMBClient {
+framework module LIBDSM {
     header "bdsm.h"
     header "libtasn1.h"
     header "netbios_defs.h"
