@@ -9,7 +9,7 @@ let package = Package(
     ],
     targets: [
         .binaryTarget(name: "LIBDSM",
-                      url: "https://github.com/McSims/LIBDSM/releases/download/0.3.3/LIBDSM-0.3.3.xcframework.zip",
-                      checksum: "e58805af24de43acbcd46a9a3650639ce43407b3eabc90ac078779fd1e437636")
+                      url: "https://github.com/McSims/LIBDSM/releases/download/0.3.4/LIBDSM-0.3.4.xcframework.zip",
+                      checksum: "8c79711a52d379162c7cb6f37153a276e3f619498812881ef462bc7cc3ae5064")
     ]
 )
